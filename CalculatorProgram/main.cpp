@@ -10,7 +10,7 @@ Calculator 1.1
 
 	Revision List: This is the place where any revisions for this software will go.
 
-	First Revision: 09-23-2024
+	First Revision: 09-23-2024 --
 	Small changes to the introduction text. I cleaned up the order of evaulation
 	For example:
 
