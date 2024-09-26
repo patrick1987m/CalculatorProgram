@@ -10,7 +10,46 @@ Calculator 1.1
 
 	Revision List: This is the place where any revisions for this software will go.
 
+	First Revision: 09-23-2024 --
+	Small changes to the introduction text. I cleaned up the order of evaulation
+	For example:
 
+	Old Text:
+
+	std::cout << "Welcome to our simple calculator. \n"
+				<< "Please enter expressions using floating-point numbers. \n"
+				<< "Below you will find the logical operations available for this version of the calculator: \n"
+				<< '\n' << '\n'
+				<< "1. (Normal Math Operations: +, -, *, /) \n2. (Bitwise Operators: &, |, ^, ~, <<, >>)\n"
+				<< "3. (Grouping with: () and {}) \n"
+				<< "\nSome basic rules: \n\n"
+				<< " 1.) This program follows PEMDAS(Parenthesis, Exponents, Multiplication, "
+				<< " Division, Addition, Subtraction.)\n"
+				<< "\n 2.) A complete expression requires a terminating ';', which is the keyword for print. \n"
+				<< "\n 3.) To exit the program: Enter 'q' !\n"
+				<< "\nExample Expressions: \n"
+				<< "\n1+2; "
+				<< "\n(1+2)*(5-2); "
+				<< "\n\n";
+	Changed Text:
+	std::cout << "Welcome to our simple calculator. \n"
+			<< "Please enter expressions using floating-point numbers. \n"
+			<< "Below you will find the logical operations available for this version of the calculator: \n"
+			<< '\n' << '\n'
+			<< "1. (Grouping with: () and {} and factorial with '!') \n2. (Normal Math Operations: +, -, *, /)\n"     -- This line was changed to include factorials within the grouping section.
+			<< "3. (Bitwise Operators: &, |, ^, ~, <<, >>)\n"
+			<< '\n'
+			<< "This program will evaluate your expression in the order of the above: With Grouping and factorials being first\n"  -- This was changed to include factorials:
+			<< "\nSome basic rules: \n\n"
+			<< " 1.) This program follows PEMDAS(Parenthesis, Exponents(not available at the moment), Multiplication, \n"
+			<< "     Division, Addition, Subtraction.)\n"
+			<< "\n 2.) A complete expression requires a terminating ';', which is the keyword for print. \n"
+			<< "\n 3.) To exit the program: Enter 'q' !\n"
+			<< "\nExample Expressions: \n"
+			<< "\n1+2; "
+			<< "\n(1+2)*(5-2); "
+			<< "\n\n";
+			Final change, instead of having this text in the calculatorlogic function. I placed this code into a seperate function. 
 
 **/
 namespace CalculatorProgram
@@ -327,27 +366,32 @@ namespace CalculatorProgram
 			std::cout << "=" << expression() << std::endl;
 		}
 	}
-
+	void printText()
+	{
+		std::cout << "Welcome to our simple calculator. \n"
+			<< "Please enter expressions using floating-point numbers. \n"
+			<< "Below you will find the logical operations available for this version of the calculator: \n"
+			<< '\n' << '\n'
+			<< "1. (Grouping with: () and {} and factorial with '!') \n2. (Normal Math Operations: +, -, *, /)\n"
+			<< "3. (Bitwise Operators: &, |, ^, ~, <<, >>)\n"
+			<< '\n'
+			<< "This program will evaluate your expression in the order of the above: With Grouping and factorials being first\n"
+			<< "\nSome basic rules: \n\n"
+			<< " 1.) This program follows PEMDAS(Parenthesis, Exponents(not available at the moment), Multiplication, \n"
+			<< "     Division, Addition, Subtraction.)\n"
+			<< "\n 2.) A complete expression requires a terminating ';', which is the keyword for print. \n"
+			<< "\n 3.) To exit the program: Enter 'q' !\n"
+			<< "\nExample Expressions: \n"
+			<< "\n1+2; "
+			<< "\n(1+2)*(5-2); "
+			<< "\n\n";
+	}
 	// Main Program Logic
 	int calculatorLogic()
 	{
 		try
 		{
-			std::cout << "Welcome to our simple calculator. \n"
-				<< "Please enter expressions using floating-point numbers. \n"
-				<< "Below you will find the logical operations available for this version of the calculator: \n"
-				<< '\n' << '\n'
-				<< "1. (Normal Math Operations: +, -, *, /) \n2. (Bitwise Operators: &, |, ^, ~, <<, >>)\n"
-				<< "3. (Grouping with: () and {}) \n"
-				<< "\nSome basic rules: \n\n"
-				<< " 1.) This program follows PEMDAS(Parenthesis, Exponents, Multiplication, "
-				<< " Division, Addition, Subtraction.)\n"
-				<< "\n 2.) A complete expression requires a terminating ';', which is the keyword for print. \n"
-				<< "\n 3.) To exit the program: Enter 'q' !\n"
-				<< "\nExample Expressions: \n"
-				<< "\n1+2; "
-				<< "\n(1+2)*(5-2); "
-				<< "\n\n";
+			printText();
 
 			calculate();
 			return 0;
