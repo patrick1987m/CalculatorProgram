@@ -1,6 +1,6 @@
 #include "programTools.h"
 /*
-Calculator 1.01
+Calculator 1.1
 
 	This version uses Tokens to capture numerical data as well as operands:
 
