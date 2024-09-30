@@ -1,6 +1,6 @@
 #include "programTools.h"
 /*
-Calculator 1.1
+Calculator 1.2
 
 	This version uses Tokens to capture numerical data as well as operands:
 
@@ -49,17 +49,45 @@ Calculator 1.1
 			<< "\n1+2; "
 			<< "\n(1+2)*(5-2); "
 			<< "\n\n";
-			Final change, instead of having this text in the calculatorlogic function. I placed this code into a seperate function. 
+			Final change, instead of having this text in the calculatorlogic function. 
+			I placed this code into a seperate function. 
+
+	Revision Version 1.2:
+	
+	Version 1.2's biggest feature add, is the ability to calculate modulo (%) or remainder:
+
+	For Example: =>: 5 % 3;
+	             = 2
+
+	Code Cleanup was performed: In the TokenStream get() function
+
+	We also had to add the token '%' onto our get function so we can use the token.
+
+	Added:
+
+	Examples for Modulo:
+
+	Major Announcement: 09-28-2024, robust error handling has been created.
+
+	Instead of the program shutting down if a user enters in a bad Token,
+	The program will clean up the TokenStream and allow calculation to continue.
+	********************************************************************************
+	End of Revision 1.2
+
 
 **/
 namespace CalculatorProgram
 {
 	// t.kind == number means that t is a number Token
-	const char number = '8';
+	constexpr char number = '8';
 	// t.kind == quit means that t is a quit Token
-	const char quit = 'q';
+	constexpr char quit = 'q';
 	// t.kind == print means t is a print Token
-	const char print = ';';
+	constexpr char print = ';';
+
+	// Let's Remove the Magic Constants for our prompt and result Token's
+	const std::string prompt{ "=>: " };
+	const std::string result{ "==: " };
 
 	class Token
 	{
@@ -77,6 +105,8 @@ namespace CalculatorProgram
 		TokenStream() : full{ false }, buffer{ 0 } { }
 		Token get();
 		void putback(Token t);
+		// Adding the ability to cleanup bad Tokens
+		void ignore(char c);
 
 	private:
 		bool full{ false };
@@ -98,17 +128,28 @@ namespace CalculatorProgram
 		case print:
 		case quit:
 
-			// Added for factorials
+		// Added for factorials
 		case '!':
-			// Grouping cases:
-		case '(': case ')':
-		case '{': case '}':
-			// Regular math operations
-		case '+': case '-': case '*': case '/':
-			// Added for bitwise capability:
-		case '&': case '|': case '^': case '<': case '>':
+		// Grouping cases:
+		case '(': 
+		case ')':
+		case '{': 
+		case '}':
+		// Regular math operations 
+		case '+': 
+		case '-': 
+		case '*': 
+		case '/': 
+		// (Version 1.2 Adds the ability to do Modulo (%) reminader cases:)
+		case '%':
+		// Added for bitwise capability:
+		case '&': 
+		case '|': 
+		case '^': 
+		case '<': 
+		case '>':
 			return Token(ch);
-			// Numerical Cases and .
+		// Numerical Cases and .
 		case '.':
 		case '0': case '1': case '2': case '3':
 		case '4': case '5': case '6': case '7':
@@ -136,6 +177,28 @@ namespace CalculatorProgram
 		buffer = t;
 		full = true;
 	}
+	/*
+	Our TokenStream class does not know what makes 
+	a good calculator Token. This function will help:    */
+	void TokenStream::ignore(char c)
+	{   // char 'c' represents the kind of Token we are looking for:
+		if (full && c == buffer.m_kind)
+		{
+			full = false;
+			return;
+		}
+		// Now we search for input
+		char ch = 0;
+
+		while (std::cin >> ch)
+		{
+			if (ch == c)
+			{
+				return;
+			}
+		}
+	}
+
 	// Create tokenStreams -- This needs to be invoked, to access the putback and get functions:
 	TokenStream tokenStreams;
 	// Need this forward declaration of expression:
@@ -250,6 +313,20 @@ namespace CalculatorProgram
 					ErrorReportingSupport::error("Error: Can not divide by zero.");
 				}
 				left /= d;
+				t = tokenStreams.get();
+				break;
+			}
+			case '%':
+			{
+				double d = factorialParser();
+
+				if (d == 0.0)
+				{
+					ErrorReportingSupport::error("%: Cannot divide by zero!");
+				}
+				left = std::fmod(left, d);
+
+				t = tokenStreams.get();
 				break;
 			}
 			default:
@@ -344,12 +421,47 @@ namespace CalculatorProgram
 			}
 		}
 	}
+	void introText()
+	{
+		std::cout << "Welcome to our simple calculator. \n"
+			<< "Please enter expressions using floating-point numbers. \n"
+			<< "Below you will find the logical operations available for this version of the calculator: \n"
+			<< '\n' << '\n'
+			<< "1. (Grouping with: () and {} and factorial with '!') \n2. (Normal Math Operations: +, -, *, / (version 1.2 Adds % or Remainder))\n"
+			<< "3. (Bitwise Operators: &, |, ^, ~, <<, >>)\n"
+			<< '\n'
+			<< "This program will evaluate your expression in the order of the above: With Grouping and factorials being first\n"
+			<< "\nSome basic rules: \n\n"
+			<< " 1.) This program follows PEMDAS(Parenthesis, Exponents(not available at the moment), Multiplication, \n"
+			<< "     Division, Addition, Subtraction.)\n"
+			<< "\n 2.) A complete expression requires a terminating ';', which is the keyword for print. \n"
+			<< "\n 3.) To exit the program: Enter 'q' !\n"
+			<< "\nExample Expressions: \n"
+			<< "\n1.) Single Expressions: 1+2; "
+			<< '\n'
+			<< "\n2.) Multiple expressions on one line: 1+2; 5-1; 6*7; "
+			<< '\n'
+			<< "      When using the calculator with many expressions on one Line: Notice! This will be improved in a later edition. "
+			<< "\n                                                                 >1+2; 5-1; 6*7; "
+			<< "\n                                                                 = > : 3 "
+			<< "\n                                                                 >=> : 4 "
+			<< "\n                                                                 >=> : 42 "
+			<< "\n3.) We can even handle complex operations: (1+2)*(5-2); Even (1+2)*(5-1)*(8*1); or as complex as you can imagine. "
+			<< "\n4.) With Edition 1.2, you can also type in remainder cases: 5%2; "
+			<< "\n\n";
+	}
+
+	// Function to handle cleanup operations:
+	void cleanUp()
+	{
+		tokenStreams.ignore(print);
+	}
 
 	// Function for our calculations:
 	void calculate()
 	{
 		while (std::cin)
-		{
+		try{
 			std::cout << ">";
 			Token t = tokenStreams.get();
 			while (t.m_kind == print)
@@ -363,48 +475,28 @@ namespace CalculatorProgram
 			}
 			tokenStreams.putback(t);
 
-			std::cout << "=" << expression() << std::endl;
+			std::cout << prompt << expression() << std::endl;
+		}
+		catch (std::exception& e)
+		{
+			std::cout << e.what() << std::endl;
+			cleanUp();
 		}
 	}
-	void printText()
-	{
-		std::cout << "Welcome to our simple calculator. \n"
-			<< "Please enter expressions using floating-point numbers. \n"
-			<< "Below you will find the logical operations available for this version of the calculator: \n"
-			<< '\n' << '\n'
-			<< "1. (Grouping with: () and {} and factorial with '!') \n2. (Normal Math Operations: +, -, *, /)\n"
-			<< "3. (Bitwise Operators: &, |, ^, ~, <<, >>)\n"
-			<< '\n'
-			<< "This program will evaluate your expression in the order of the above: With Grouping and factorials being first\n"
-			<< "\nSome basic rules: \n\n"
-			<< " 1.) This program follows PEMDAS(Parenthesis, Exponents(not available at the moment), Multiplication, \n"
-			<< "     Division, Addition, Subtraction.)\n"
-			<< "\n 2.) A complete expression requires a terminating ';', which is the keyword for print. \n"
-			<< "\n 3.) To exit the program: Enter 'q' !\n"
-			<< "\nExample Expressions: \n"
-			<< "\n1+2; "
-			<< "\n(1+2)*(5-2); "
-			<< "\n\n";
-	}
+	
 	// Main Program Logic
 	int calculatorLogic()
 	{
 		try
 		{
-			printText();
-
+			introText();
 			calculate();
 			return 0;
-		}
-		catch (std::exception& e)
-		{
-			std::cerr << "Error: " << e.what() << '\n';
-			return 1;
 		}
 		catch (...)
 		{
 			std::cerr << "Oops! Unknown Exceptions Caught!\n";
-			return 2;
+			return 1;
 		}
 	}
 }
